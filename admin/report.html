@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Reports | Hotel Menu</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #fff8f0;
+      margin: 0;
+      text-align: center;
+      padding: 30px;
+    }
+    header {
+      background: #e63946;
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #e63946;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+    }
+    button:hover { background: #d62828; }
+    table {
+      width: 95%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    th { background: #fcd5b5; }
+  </style>
+</head>
+<body>
+  <header><h2>📊 Reports & Billing</h2></header>
+
+  <button onclick="downloadCSV()">⬇️ Download CSV Report</button>
+
+  <table id="reportTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Table No</th>
+        <th>Total (₹)</th>
+        <th>Status</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadReport() {
+      const res = await fetch('../api/get_orders.php');
+      const orders = await res.json();
+      const tbody = document.querySelector('#reportTable tbody');
+      tbody.innerHTML = '';
+
+      if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="5">No data available</td></tr>';
+        return;
+      }
+
+      orders.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${o.order_id}</td>
+          <td>${o.table_no}</td>
+          <td>₹${o.total}</td>
+          <td>${o.status}</td>
+          <td>${o.time}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function downloadCSV() {
+      window.location.href = '../api/export_report.php';
+    }
+
+    loadReport();
+  </script>
+</body>
+</html>

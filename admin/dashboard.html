@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | Hotel Menu</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #fff8f0;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #e63946;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 30px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+    <nav>
+      <a href="menu.html">Menu</a>
+      <a href="orders.html">Orders</a>
+      <a href="report.html">Reports</a>
+      <a href="../api/logout.php" onclick="logout()">Logout</a>
+    </nav>
+  </header>
+  <main>
+    <h2>Welcome, <span id="adminUser"></span> 👋</h2>
+    <p>Select an option from the navigation above to manage the system.</p>
+  </main>
+
+  <script>
+    const user = localStorage.getItem('adminUser');
+    document.getElementById('adminUser').textContent = user ? user : 'Admin';
+
+    function logout() {
+      localStorage.removeItem('adminUser');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

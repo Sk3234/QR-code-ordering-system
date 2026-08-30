@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kitchen Orders – Hotel Zaika</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    body {
+      background: #fff8f0;
+      font-family: 'Poppins', sans-serif;
+    }
+    h2 {
+      text-align: center;
+      color: #b51700;
+      margin-top: 20px;
+    }
+    .order-container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+    th {
+      background: #f9d8a8;
+    }
+    .status {
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+    .status.preparing { color: #f77f00; }
+    .status.ready { color: #2a9d8f; }
+    .status.served { color: #264653; }
+    .btn {
+      background: #e63946;
+      border: none;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #d62828;
+    }
+    .refresh {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="order-container">
+    <h2>👨‍🍳 Kitchen Order Dashboard</h2>
+    <div class="refresh">
+      <button class="btn" onclick="refreshOrders()">🔄 Refresh</button>
+    </div>
+    <table id="cook-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Table</th>
+          <th>Items</th>
+          <th>Total (₹)</th>
+          <th>Status</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+  async function fetchOrders(){
+    try {
+      const res = await fetch('../api/get_orders.php');
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch(e){
+      console.error('Error loading orders:', e);
+      return [];
+    }
+  }
+
+  async function updateStatus(orderId, newStatus){
+    try {
+      await fetch('../api/update_status.php', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({order_id: orderId, status: newStatus})
+      });
+      await refreshOrders();
+    } catch(e){
+      alert('Error updating status');
+    }
+  }
+
+  async function refreshOrders(){
+    const orders = await fetchOrders();
+    const tbody = document.querySelector('#cook-table tbody');
+    tbody.innerHTML = '';
+    if(orders.length === 0){
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No current orders.</td></tr>`;
+      return;
+    }
+
+    orders.forEach(o=>{
+      const items = o.items.map(i=>`${i.name} × ${i.qty}`).join('<br>');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${o.order_id}</td>
+        <td>${o.table_no}</td>
+        <td>${items}</td>
+        <td>₹${o.total}</td>
+        <td class="status ${o.status}">${o.status}</td>
+        <td>
+          <select onchange="updateStatus(${o.order_id}, this.value)">
+            <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+            <option value="preparing" ${o.status==='preparing'?'selected':''}>Preparing</option>
+            <option value="ready" ${o.status==='ready'?'selected':''}>Ready</option>
+            <option value="served" ${o.status==='served'?'selected':''}>Served</option>
+          </select>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // auto-refresh every 5 seconds
+  setInterval(refreshOrders, 5000);
+  refreshOrders();
+  </script>
+</body>
+</html>

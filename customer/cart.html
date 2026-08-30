@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Your Cart – Hotel Zaika</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  body{background:#fffaf4;font-family:sans-serif;}
+  .container{max-width:900px;margin:20px auto;padding:0 12px;}
+  h1{color:#b51700;text-align:center;}
+  table{width:100%;border-collapse:collapse;margin-top:15px;}
+  th,td{border:1px solid #ddd;padding:8px;text-align:center;}
+  th{background:#ffe4d6;}
+  img{width:60px;height:50px;object-fit:cover;border-radius:6px;}
+  .btn{background:#e63946;color:#fff;padding:8px 14px;border:none;border-radius:6px;cursor:pointer;}
+  .btn:hover{background:#d62828;}
+  .actions{display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
+  .empty{text-align:center;margin-top:40px;color:#777;}
+  .total{margin-top:20px;font-size:18px;text-align:right;font-weight:bold;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🛒 Your Cart</h1>
+  <div id="cart-container"></div>
+  <div class="total" id="total-display"></div>
+  <div class="actions">
+    <a href="index.html" class="btn">← Continue Ordering</a>
+    <button id="checkoutBtn" class="btn">Proceed to Bill →</button>
+  </div>
+</div>
+
+<script src="../assets/script.js"></script>
+<script>
+function renderCart(){
+  const cartDiv = document.getElementById('cart-container');
+  const cart = getCart();
+  if(!cart.length){
+    cartDiv.innerHTML = '<p class="empty">Your cart is empty.</p>';
+    document.getElementById('total-display').innerText = '';
+    return;
+  }
+
+  let html = `
+  <table>
+    <tr>
+      <th>#</th>
+      <th>Image</th>
+      <th>Item</th>
+      <th>Price</th>
+      <th>Qty</th>
+      <th>Total</th>
+      <th>Action</th>
+    </tr>`;
+  let total = 0;
+  cart.forEach((item,i)=>{
+    const line = item.price * item.qty;
+    total += line;
+    html += `
+    <tr>
+      <td>${i+1}</td>
+      <td><img src="${item.img||'../assets/images/noimg.jpg'}" alt="${item.name}"></td>
+      <td>${item.name}</td>
+      <td>₹${item.price}</td>
+      <td><input type="number" min="1" value="${item.qty}" onchange="changeQty(${i}, this.value)"></td>
+      <td>₹${line}</td>
+      <td><button class="btn" onclick="removeItem(${i})">Remove</button></td>
+    </tr>`;
+  });
+  html += '</table>';
+  cartDiv.innerHTML = html;
+  document.getElementById('total-display').innerText = 'Total: ₹' + total;
+}
+
+function changeQty(index, val){
+  const cart = getCart();
+  cart[index].qty = parseInt(val);
+  saveCart(cart);
+  renderCart();
+  updateCartBadge();
+}
+
+function removeItem(i){
+  const cart = getCart();
+  cart.splice(i,1);
+  saveCart(cart);
+  renderCart();
+  updateCartBadge();
+}
+
+async function proceed(){
+  const cart = getCart();
+  if(!cart.length){ alert('Cart empty'); return; }
+
+  const table_no = prompt("Enter your Table Number:");
+  if(!table_no){ alert('Please enter your table number'); return; }
+
+  const total = cart.reduce((sum,i)=>sum + i.price * i.qty,0);
+
+  try {
+    const res = await fetch('../api/add_order.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ table_no, items: cart, total })
+    });
+    const data = await res.json();
+    if(data.status === 'success'){
+      alert('✅ Order placed for Table ' + table_no + ' (Order ID: ' + data.order_id + ')');
+      clearCart();
+      window.location = 'bill.html';
+    } else {
+      alert('❌ Error placing order: ' + (data.message || 'Unknown'));
+    }
+  } catch(e){
+    alert('⚠️ Server error: ' + e.message);
+  }
+}
+
+renderCart();
+document.getElementById('checkoutBtn').addEventListener('click', proceed);
+</script>
+</body>
+</html>

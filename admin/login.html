@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login | Hotel Menu</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #fff8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #b51700;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #e63946;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #d62828;
+    }
+    .error {
+      color: #e63946;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Admin Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="loginAdmin()">Login</button>
+    <div id="message" class="error"></div>
+  </div>
+
+  <script>
+    async function loginAdmin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const msg = document.getElementById('message');
+
+      msg.textContent = '';
+
+      const res = await fetch('../api/admin_login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      msg.textContent = data.message;
+
+      if (data.status === 'success') {
+        localStorage.setItem('adminUser', username);
+        window.location.href = 'dashboard.html';
+      }
+    }
+  </script>
+</body>
+</html>

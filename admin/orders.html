@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Orders | Hotel Menu</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #fff8f0;
+      margin: 0;
+    }
+    header {
+      background: #e63946;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    table {
+      width: 95%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      background: #f9d8a8;
+    }
+    button {
+      background: #e63946;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #d62828; }
+  </style>
+</head>
+<body>
+  <header><h2>📦 All Orders</h2></header>
+
+  <table id="ordersTable">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Table No</th>
+        <th>Total (₹)</th>
+        <th>Status</th>
+        <th>Time</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadOrders() {
+      const res = await fetch('../api/get_orders.php');
+      const orders = await res.json();
+      const tbody = document.querySelector('#ordersTable tbody');
+      tbody.innerHTML = '';
+
+      if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders available</td></tr>';
+        return;
+      }
+
+      orders.forEach(o => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${o.order_id}</td>
+          <td>${o.table_no}</td>
+          <td>₹${o.total}</td>
+          <td>${o.status}</td>
+          <td>${o.time}</td>
+          <td>
+            <button onclick="updateStatus(${o.order_id}, 'ready')">Ready</button>
+            <button onclick="updateStatus(${o.order_id}, 'served')">Served</button>
+            <button onclick="deleteOrder(${o.order_id})">❌</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function updateStatus(id, status) {
+      await fetch('../api/update_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: id, status })
+      });
+      loadOrders();
+    }
+
+    async function deleteOrder(id) {
+      if (!confirm('Delete this order?')) return;
+      await fetch('../api/delete_order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: id })
+      });
+      loadOrders();
+    }
+
+    loadOrders();
+  </script>
+</body>
+</html>

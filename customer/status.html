@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Status – Hotel Zaika</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    body {
+      background: #fffaf3;
+      font-family: 'Poppins', sans-serif;
+    }
+    .status-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #b51700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+    th {
+      background: #ffeed4;
+    }
+    .status {
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+    .status.preparing { color: #f77f00; }
+    .status.ready { color: #2a9d8f; }
+    .status.served { color: #264653; }
+    .btn {
+      background: #e63946;
+      border: none;
+      padding: 6px 12px;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn:hover { background: #d62828; }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .empty { text-align:center; color:#999; padding:20px; }
+  </style>
+</head>
+<body>
+  <div class="status-container">
+    <h2>Order Status – Table <span id="tableNo">#?</span></h2>
+
+    <table id="status-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>Price (₹)</th>
+          <th>Status</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="footer">
+      <button class="btn" onclick="window.location.href='index.html'">← Back to Menu</button>
+    </div>
+  </div>
+
+  <script>
+    // Load last order (from localStorage or backend)
+    let lastOrder = JSON.parse(localStorage.getItem('lastOrder'));
+    const tbody = document.querySelector('#status-table tbody');
+    const tableNoEl = document.getElementById('tableNo');
+
+    if (!lastOrder || !lastOrder.items) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty">No active orders found.</td></tr>`;
+    } else {
+      const tableNo = lastOrder.table_no || 'N/A';
+      tableNoEl.textContent = tableNo;
+
+      // Initialize local storage for statuses if missing
+      let orderStatus = JSON.parse(localStorage.getItem('orderStatus_' + tableNo)) ||
+        lastOrder.items.map(i => ({ ...i, status: 'preparing' }));
+
+      localStorage.setItem('orderStatus_' + tableNo, JSON.stringify(orderStatus));
+
+      function renderStatus() {
+        tbody.innerHTML = '';
+        orderStatus.forEach((item, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.qty}</td>
+            <td>₹${item.price}</td>
+            <td class="status ${item.status}">${item.status}</td>
+            <td>
+              <select onchange="updateStatus(${index}, this.value)">
+                <option value="preparing" ${item.status === 'preparing' ? 'selected' : ''}>Preparing</option>
+                <option value="ready" ${item.status === 'ready' ? 'selected' : ''}>Ready</option>
+                <option value="served" ${item.status === 'served' ? 'selected' : ''}>Served</option>
+              </select>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      window.updateStatus = function(index, newStatus) {
+        orderStatus[index].status = newStatus;
+        localStorage.setItem('orderStatus_' + tableNo, JSON.stringify(orderStatus));
+        renderStatus();
+      };
+
+      renderStatus();
+    }
+  </script>
+</body>
+</html>

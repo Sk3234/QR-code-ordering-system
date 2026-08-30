@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Hotel Zaika Menu</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    body {
+      background: #fff8f0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 18px auto;
+      padding: 0 12px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    h1 {
+      color: #b51700;
+      margin: 0;
+    }
+
+    .category {
+      margin-top: 22px;
+    }
+
+    .category h2 {
+      margin: 0 0 8px 0;
+      color: #b5482f;
+      font-size: 1.15rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+
+    .item {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      margin-bottom: 8px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .item img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #eee;
+    }
+
+    .info {
+      flex: 1;
+    }
+
+    .name {
+      font-weight: 600;
+    }
+
+    .meta {
+      color: #666;
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .controls input[type="number"] {
+      width: 60px;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    .btn-small {
+      background: #e63946;
+      color: #fff;
+      border: none;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-small:hover {
+      background: #d62828;
+    }
+
+    .option-select {
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    .view-pdf {
+      text-decoration: none;
+      background: #2a9d8f;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>FOOD POINT</h1>
+        <div class="small">Interactive Fixed Menu – Punjabi, Chinese & Kathiyawadi</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <a class="view-pdf" href="../assets/m1.pdf" target="_blank">📄 View PDF Menu</a>
+        <a class="btn" href="cart.html">🛒 Cart <span id="cart-count">0</span></a>
+      </div>
+    </div>
+
+    <div id="menu-root"></div>
+  </div>
+
+  <script src="../assets/script.js"></script>
+  <script>
+    const menuData = [
+      // ---------------------- Punjabi Section ----------------------
+      {
+        category: 'Bhaji Pav', items: [
+          { id: 201, name: 'Sp. FP Bhaji Pav', price: 100, img: '../assets/images/Sp. FP Bhaji Pav.jpg' },
+          { id: 202, name: 'Bhaji Pav (1 jodi)', price: 100, img: '../assets/images/Bhaji Pav (1 jodi).jpg' },
+          { id: 203, name: 'Only Bhaji (300g)', price: 90, img: '../assets/images/Only Bhaji.jpg' },
+          { id: 204, name: 'Cheese Bhaji Pav', price: 120, img: '../assets/images/Cheese Bhaji Pav.jpg' },
+          { id: 205, name: 'Swaminarayan Bhaji Pav', price: 140, img: '../assets/images/Swaminarayan Bhaji Pav.jpg' },
+          { id: 206, name: 'Extra Pav (1 jodi)', price: 15, img: '../assets/images/Extra Pav.jpg' },
+          { id: 207, name: 'Masala Pav (3 pc)', price: 80, img: '../assets/images/Masala Pav.jpg' },
+          { id: 208, name: 'Sp. Garlic Chutney (300g)', price: 100, img: '../assets/images/Sp. Garlic Chutney.jpg' }
+        ]
+      },
+      {
+        category: 'Pulav & Biryani', items: [
+          { id: 301, name: 'Veg Pulav (Half/Full)', options: [{ label: 'Half', price: 70 }, { label: 'Full', price: 130 }], img: '../assets/images/Veg Pulav (Half/Full).jpg' },
+          { id: 302, name: 'Bhaji Pulav', price: 90, img: '../assets/images/Bhaji Pulav.jpg' },
+          { id: 303, name: 'Cheese Pulav', price: 130, img: '../assets/images/Cheese Pulav.jpg' },
+          { id: 304, name: 'Paneer Pulav', price: 130, img: '../assets/images/Paneer Pulav.jpg' },
+          { id: 305, name: 'Veg Biryani', price: 140, img: '../assets/images/Veg Biryani.jpg' },
+          { id: 306, name: 'Cheese Biryani', price: 150, img: '../assets/images/Cheese Biryani.jpg' },
+          { id: 307, name: 'Hyderabadi Biryani', price: 150, img: '../assets/images/Hyderabadi Biryani.jpg' }
+        ]
+      },
+      {
+        category: 'Soups', items: [
+          { id: 401, name: 'Hot & Sour Soup', price: 70, img: '../assets/images/Hot & Sour Soup.jpg' },
+          { id: 402, name: 'Manchow Soup', price: 70, img: '../assets/images/Manchow Soup.jpg' },
+          { id: 403, name: 'Manchurian Soup', price: 70, img: '../assets/images/Manchurian Soup.jpg' }
+        ]
+      },
+      {
+        category: 'Manchurian & Chinese', items: [
+          { id: 501, name: 'Manchurian Dry', price: 100, img: '../assets/images/Manchurian Dry.jpg' },
+          { id: 502, name: 'Manchurian Gravy', price: 100, img: '../assets/images/Manchurian Gravy.jpg' },
+          { id: 503, name: 'Paneer Manchurian Dry', price: 120, img: '../assets/images/Paneer Manchurian Dry.jpg' },
+          { id: 504, name: 'Paneer Manchurian Gravy', price: 120, img: '../assets/images/Paneer Manchurian Gravy.jpg' },
+          { id: 505, name: 'Schezwan Manchurian', price: 120, img: '../assets/images/Schezwan Manchurian.jpg' },
+          { id: 506, name: 'Garlic Manchurian', price: 120, img: '../assets/images/Garlic Manchurian.jpg' },
+          { id: 507, name: 'Paneer Chilly Dry', price: 180, img: '../assets/images/Paneer Chilly Dry.jpg' },
+          { id: 508, name: 'Chinese Bhel', price: 140, img: '../assets/images/Chinese Bhel.jpg' }
+        ]
+      },
+      {
+        category: 'Noodles', items: [
+          { id: 601, name: 'Veg Hakka Noodles (Half/Full)', options: [{ label: 'Half', price: 70 }, { label: 'Full', price: 100 }], img: '../assets/images/Veg Hakka Noodles.jpg' },
+          { id: 602, name: 'Manchurian Noodles', price: 90, img: '../assets/images/Manchurian Noodles.jpg' },
+          { id: 603, name: 'Schezwan Noodles', price: 90, img: '../assets/images/Schezwan Noodles.jpg' },
+          { id: 604, name: 'Paneer Manchurian Noodles', price: 120, img: '../assets/images/Paneer Manchurian Noodles.jpg' }
+        ]
+      },
+      {
+        category: 'Fried Rice', items: [
+          { id: 701, name: 'Veg Fried Rice (Half/Full)', options: [{ label: 'Half', price: 70 }, { label: 'Full', price: 100 }], img: 'Veg Fried Rice (Half/Full).jpg' },
+          { id: 702, name: 'Manchurian Fried Rice', price: 100, img: '../assets/images/Manchurian Fried Rice.jpg' },
+          { id: 703, name: 'Schezwan Rice', price: 100, img:'../assets/images/Schezwan Rice.jpg' },
+          { id: 704, name: 'Paneer Fried Rice', price: 120, img: '../assets/images/Paneer Fried Rice.jpg' }
+        ]
+      },
+      {
+        category: 'Paneer Sabji (300ml / 500ml)', items: [
+          { id: 801, name: 'Cheese Butter Masala', options: [{ label: '300ml', price: 170 }, { label: '500ml', price: 250 }], img: '../assets/images/Cheese Butter Masala.jpg' },
+          { id: 802, name: 'Paneer Butter Masala', options: [{ label: '300ml', price: 150 }, { label: '500ml', price: 210 }], img: '../assets/images/Paneer Butter Masala.jpg' },
+          { id: 803, name: 'Paneer Lawabdar', options: [{ label: '300ml', price: 160 }, { label: '500ml', price: 220 }], img: '../assets/images/Paneer Lawabdar.jpg' },
+          { id: 804, name: 'Paneer Kadai', options: [{ label: '300ml', price: 150 }, { label: '500ml', price: 210 }], img: '../assets/images/Paneer Kadai.jpg' },
+          { id: 805, name: 'Paneer Angara', options: [{ label: '300ml', price: 150 }, { label: '500ml', price: 210 }], img: '../assets/images/Paneer Angara.jpg' },
+          { id: 806, name: 'Paneer Handi', options: [{ label: '300ml', price: 150 }, { label: '500ml', price: 210 }], img:'../assets/images/Paneer Handi.jpg' },
+          { id: 807, name: 'Paneer Tikka Masala', options: [{ label: '300ml', price: 140 }, { label: '500ml', price: 200 }], img: '../assets/images/Paneer Tikka Masala.jpg' },
+          { id: 808, name: 'Mutter Paneer', options: [{ label: '300ml', price: 140 }, { label: '500ml', price: 200 }], img: '../assets/images/Mutter Paneer.jpg' },
+          { id: 809, name: 'Kaju Paneer Masala', options: [{ label: '300ml', price: 160 }, { label: '500ml', price: 230 }], img: '../assets/images/Kaju Paneer Masala.jpg' }
+        ]
+      },
+      {
+        category: 'Veg Sabji (300ml / 500ml)', items: [
+          { id: 901, name: 'Mix Veg', options: [{ label: '300ml', price: 120 }, { label: '500ml', price: 180 }], img: '../assets/images/Mix Veg.jpg' },
+          { id: 902, name: 'Veg Kolhapuri', options: [{ label: '300ml', price: 120 }, { label: '500ml', price: 180 }], img: '../assets/images/Veg Kolhapuri.jpg' },
+          { id: 903, name: 'Veg Handi', options: [{ label: '300ml', price: 120 }, { label: '500ml', price: 180 }], img: '../assets/images/Veg Handi.jpg' },
+          { id: 904, name: 'Veg Jaypuri', options: [{ label: '300ml', price: 120 }, { label: '500ml', price: 180 }], img: '../assets/images/Veg Jaypuri.jpg' },
+          { id: 905, name: 'Veg Hyderabadi', options: [{ label: '300ml', price: 120 }, { label: '500ml', price: 180 }], img: '../assets/images/Veg Hyderabadi.jpg' }
+        ]
+      },
+
+      // ---------------------- Kathiyawadi Section ----------------------
+      {
+        category: 'Kathiyawadi Sabji (500ml)', items: [
+          { id: 1001, name: 'Sp. Kathiyawadi', price: 180, img: '../assets/images/Sp. Kathiyawadi.jpg' },
+          { id: 1002, name: 'Kaju Gathiya', price: 160, img: '../assets/images/Kaju Gathiya.jpg' },
+          { id: 1003, name: 'Kaju Lasaniya', price: 160, img: '../assets/images/Kaju Lasaniya.jpg' },
+          { id: 1004, name: 'Sev Tomato', price: 130, img: '../assets/images/Sev Tomato.jpg' },
+          { id: 1005, name: 'Sev Masala', price: 130, img: '../assets/images/Sev Masala.jpg' },
+          { id: 1006, name: 'Sev Lasaniya', price: 140, img: '../assets/images/Sev Lasaniya.jpg' },
+          { id: 1007, name: 'Bengan Bhartha', price: 140, img: '../assets/images/Bengan Bhartha.jpg' },
+          { id: 1008, name: 'Rajma Masala', price: 140, img: '../assets/images/Rajma Masala.jpg' },
+          { id: 1009, name: 'Moong Fry', price: 150, img: '../assets/images/Moong Fry.jpg' },
+          { id: 1010, name: 'Moong Masala', price: 140, img: '../assets/images/Moong Masala.jpg' },
+          { id: 1011, name: 'Bhindi Fry', price: 150, img: '../assets/images/Bhindi Fry.jpg' },
+          { id: 1012, name: 'Bhindi Masala', price: 140, img: '../assets/images/Bhindi Masala.jpg' },
+          { id: 1013, name: 'Dahi Bhindi', price: 140, img: '../assets/images/Dahi Bhindi.jpg' },
+          { id: 1014, name: 'Aalu Matar', price: 130, img: '../assets/images/Aalu Matar.jpg' },
+          { id: 1015, name: 'Aalu Gobi', price: 110, img: '../assets/images/Aalu Gobi.jpg' },
+          { id: 1016, name: 'Suki Bhaji', price: 110, img: '../assets/images/Suki Bhaji.jpg' },
+          { id: 1017, name: 'Dungdi Bataka', price: 110, img: '../assets/images/Dungdi Bataka.jpg' },
+          { id: 1018, name: 'Aalu Bhindi', price: 140, img: '../assets/images/Aalu Bhindi.jpg' },
+          { id: 1019, name: 'Methi Papad', price: 150, img: '../assets/images/Methi Papad.jpg' },
+          { id: 1020, name: 'Lasaniya Bataka', price: 130, img: '../assets/images/Lasaniya Bataka.jpg' },
+          { id: 1021, name: 'Dahi Tikhari', price: 90, img: '../assets/images/Dahi Tikhari.jpg' },
+          { id: 1022, name: 'Vagarelo Rotlo', price: 110, img: '../assets/images/Vagarelo Rotlo.jpg' },
+          { id: 1023, name: 'Ghee', price: 30, img: '../assets/images/Ghee.jpg' },
+          { id: 1024, name: 'Gud', price: 20, img: '../assets/images/Gud.jpg' },
+          { id: 1025, name: 'Ghee Gud', price: 40, img: '../assets/images/Ghee Gud.jpg' }
+        ]
+      },
+      {
+        category: 'Chapati & Rotla', items: [
+          { id: 1101, name: 'Butter Chapati', price: 12, img: '../assets/images/Butter Chapati.jpg' },
+          { id: 1102, name: 'Plain Chapati', price: 10, img: '../assets/images/Plain Chapati.jpg' },
+          { id: 1103, name: 'Butter Rotla', price: 35, img: '../assets/images/Butter Rotla.jpg' },
+          { id: 1104, name: 'Plain Rotla', price: 30, img: '../assets/images/Plain Rotla.jpg' }
+        ]
+      },
+      {
+        category: 'Kadhi & Khichdi', items: [
+          { id: 1201, name: 'Kathiyawadi Kadhi', price: 100, img: '../assets/images/Kathiyawadi Kadhi.jpg' },
+          { id: 1202, name: 'Rajwadi Khichdi', price: 100, img: '../assets/images/Rajwadi Khichdi.jpg' },
+          { id: 1203, name: 'Masala Khichdi', price: 90, img: '../assets/images/Masala Khichdi.jpg' },
+          { id: 1204, name: 'Plain Khichdi', price: 80, img: '../assets/images/Plain Khichdi.jpg' }
+        ]
+      },
+      {
+        category: 'Papad & Chass', items: [
+          { id: 1301, name: 'Rosted Papad', price: 15, img: '../assets/images/Rosted Papad.jpg' },
+          { id: 1302, name: 'Fry Papad', price: 20, img: '../assets/images/Fry Papad.jpg' },
+          { id: 1303, name: 'Masala Papad', price: 40, img: '../assets/images/Masala Papad.jpg' },
+          { id: 1304, name: 'Rost. Masala Papad', price: 35, img: '../assets/images/Rost. Masala Papad.jpg' },
+          { id: 1305, name: 'Masala Chass', price: 20, img: '../assets/images/Masala Chass.jpg' }
+        ]
+      },
+      {
+        category: 'Thali', items: [
+          { id: 1401, name: 'Kathiyawadi Fix Thali (Sev Tomato + Aalu Matar + Khichdi + Kadhi + 4 Chapati + Butter Milk + Salad)', price: 130, img: '../assets/images/Kathiyawadi Fix Thali.jpg' },
+          { id: 1402, name: 'Punjabi Fix Thali (Paneer Sabji + Veg Sabji + Dal Fry + Jeera Rice + 3 Tandoori Roti + Buttermilk + Salad)', price: 160, img: '../assets/images/Punjabi Fix Thali.jpg' }
+        ]
+      }
+    ];
+
+    // ---------------------- RENDER ----------------------
+    const root = document.getElementById('menu-root');
+
+    function renderItem(item) {
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      const img = document.createElement('img');
+      img.src = item.img || '../assets/images/noimg.jpg';
+      img.alt = item.name;
+      div.appendChild(img);
+
+      const info = document.createElement('div');
+      info.className = 'info';
+      info.innerHTML = `<div class="name">${item.name}</div>`;
+      if (item.price) {
+        info.innerHTML += `<div class="meta"><b>₹${item.price}</b></div>`;
+      } else if (item.options) {
+        const sel = document.createElement('select');
+        sel.className = 'option-select';
+        item.options.forEach(opt => {
+          const o = document.createElement('option');
+          o.value = opt.price;
+          o.text = `${opt.label} - ₹${opt.price}`;
+          sel.appendChild(o);
+        });
+        info.appendChild(sel);
+      }
+      div.appendChild(info);
+
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+      const qty = document.createElement('input');
+      qty.type = 'number'; qty.min = 1; qty.value = 1;
+      const btn = document.createElement('button');
+      btn.className = 'btn-small';
+      btn.textContent = 'Add';
+      btn.onclick = () => {
+        let price = item.price;
+        if (item.options) {
+          const sel = info.querySelector('select');
+          price = parseFloat(sel.value);
+        }
+        for (let i = 0; i < qty.value; i++) {
+          addToCart(item.id, item.name, price, item.img);
+        }
+        updateBadge();
+      };
+      controls.appendChild(qty);
+      controls.appendChild(btn);
+      div.appendChild(controls);
+      return div;
+    }
+
+    menuData.forEach(cat => {
+      const section = document.createElement('div');
+      section.className = 'category';
+      const h = document.createElement('h2');
+      h.textContent = cat.category;
+      section.appendChild(h);
+      cat.items.forEach(it => {
+        section.appendChild(renderItem(it));
+      });
+      root.appendChild(section);
+    });
+    updateBadge();
+  </script>
+</body>
+
+</html>
